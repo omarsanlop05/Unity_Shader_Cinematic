@@ -35,5 +35,5 @@ Shader "ACG/HologramShader"
             }
         ENDCG
     }
-    Fallback "Difuse"
+    Fallback "Diffuse"
 }

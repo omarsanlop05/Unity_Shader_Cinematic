@@ -43,4 +43,5 @@ Shader "ACG/SnowShader"
 
         ENDCG
     }
+    Fallback "Diffuse"
 }

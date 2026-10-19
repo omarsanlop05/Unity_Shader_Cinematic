@@ -26,5 +26,5 @@ Shader "ACG/Standard_PBR"{
 
 		ENDCG
 	}
-	Fallback "Difuse"
+	Fallback "Diffuse"
 }
