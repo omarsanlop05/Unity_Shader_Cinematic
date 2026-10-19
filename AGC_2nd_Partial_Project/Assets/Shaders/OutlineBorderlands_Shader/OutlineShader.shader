@@ -29,7 +29,8 @@ Shader "ACG/OutlineShader"
             float4 _OutlineColor;
 
             void vert(inout appdata v){
-                v.vertex.xyz += v.normal * _Outline;
+                float3 dirFromCenter = normalize(v.vertex.xyz);
+                v.vertex.xyz += dirFromCenter * _Outline;
             }
 
             void surf(Input IN, inout SurfaceOutput o){

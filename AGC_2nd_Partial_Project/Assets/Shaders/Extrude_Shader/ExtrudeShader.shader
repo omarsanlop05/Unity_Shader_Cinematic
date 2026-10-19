@@ -28,7 +28,9 @@ Shader "ACG/ExtrudeShader"
 
             void vert(inout appdata v){
                 float3 wave = (sin(_Time.y * 2) + 1) * 0.5;
-                v.vertex.xyz += v.normal * _ExtrudeAmmount * wave;
+
+                float3 dir = normalize(v.vertex.xyz);
+                v.vertex.xyz += dir * _ExtrudeAmmount * wave;
             }
 
             void surf(Input IN, inout SurfaceOutput o){
