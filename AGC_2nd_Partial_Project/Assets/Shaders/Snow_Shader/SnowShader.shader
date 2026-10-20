@@ -4,43 +4,56 @@ Shader "ACG/SnowShader"
         _MainTex("Texture", 2D) = "white" {}
         _Snow("Snow Level", Range(-1,1)) = 0.5
         _SnowColor("Snow Color", Color) = (1,1,1,1)
-        _SnowDirection("Snow Direction", Vector) = (0,1,0)
-        _SnowDepth("Snow Depth", Range(0, 0.05)) = 0
+        _SnowDirection("Snow Direction", Vector) = (0,1,0,0)
+        _SnowDepth("Snow Depth", Range(0, 0.5)) = 0.05
     }
 
     SubShader{
+        Tags { "RenderType"="Opaque" }
+
         CGPROGRAM
-            #pragma surface surf Lambert vertex:vert
+            #pragma surface surf Lambert
 
             struct Input{
                 float2 uv_MainTex;
-                float3 worldNormal;
-                INTERNAL_DATA
             };
 
             sampler2D _MainTex;
+
+            void surf(Input IN, inout SurfaceOutput o){
+                o.Albedo = tex2D(_MainTex, IN.uv_MainTex).rgb;
+            }
+        ENDCG
+
+       CGPROGRAM
+            #pragma surface surf Lambert vertex:vert
+
+            struct Input{
+                float facing;
+            };
+
             float _Snow;
             float4 _SnowColor;
-            float3 _SnowDirection;
+            float4 _SnowDirection;
             float _SnowDepth;
 
-            void vert(inout appdata_full v){
+            void vert(inout appdata_full v, out Input o){
+                UNITY_INITIALIZE_OUTPUT(Input, o);
+
+                float3 dir = normalize(v.vertex.xyz);
                 float3 snowDir = normalize(_SnowDirection.xyz);
-                if(dot(snowDir, v.normal) >= _Snow){
-                    v.vertex.xyz += v.normal * _SnowDepth;
+
+                o.facing = dot(snowDir, UnityObjectToWorldNormal(dir));
+
+                if(o.facing >= _Snow){
+                    v.vertex.xyz += dir * _SnowDepth;
                 }
             }
 
             void surf(Input IN, inout SurfaceOutput o){
-                float4 c = tex2D(_MainTex, IN.uv_MainTex);
-                float3 wNormal = WorldNormalVector(IN, o.Normal);
-                if(dot(_SnowDirection, wNormal) >= _Snow){
-                    o.Albedo = _SnowColor.rgb;
-                } else{
-                    o.Albedo = c.rgb;
-                }
+                clip(IN.facing - _Snow);
+                o.Albedo = _SnowColor.rgb;
             }
-
         ENDCG
     }
     Fallback "Diffuse"
