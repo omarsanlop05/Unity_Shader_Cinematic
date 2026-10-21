@@ -25,7 +25,7 @@ Shader "ACG/SnowShader"
             }
         ENDCG
 
-       CGPROGRAM
+        CGPROGRAM
             #pragma surface surf Lambert vertex:vert
 
             struct Input{
@@ -40,13 +40,12 @@ Shader "ACG/SnowShader"
             void vert(inout appdata_full v, out Input o){
                 UNITY_INITIALIZE_OUTPUT(Input, o);
 
-                float3 dir = normalize(v.vertex.xyz);
                 float3 snowDir = normalize(_SnowDirection.xyz);
 
-                o.facing = dot(snowDir, UnityObjectToWorldNormal(dir));
+                o.facing = dot(snowDir, UnityObjectToWorldNormal(v.normal));
 
                 if(o.facing >= _Snow){
-                    v.vertex.xyz += dir * _SnowDepth;
+                    v.vertex.xyz += v.normal * _SnowDepth;
                 }
             }
 
